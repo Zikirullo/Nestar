@@ -14,10 +14,10 @@ import { BoardArticleModule } from './board-article/board-article.module';
 		AuthModule,
 		PropertyModule,
 		BoardArticleModule,
-		CommentModule,
+		FollowModule,
 		LikesModule,
 		ViewsModule,
-		FollowModule,
+		CommentModule,
 	],
 })
 export class ComponentsModule {}

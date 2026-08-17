@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class MemberService {
+	constructor(@InjectModel('Member') private readonly memberModel: Model<null>) {}
+
 	public async signup(): Promise<string> {
-		return 'signup servvice executed';
+		return 'signup service executed';
 	}
 	public async login(): Promise<string> {
-		return 'login servvice executed';
+		return 'login service executed';
 	}
 	public async updateMember(): Promise<string> {
-		return 'updateMember servvice executed';
+		return 'updateMember service executed';
 	}
 	public async getMember(): Promise<string> {
-		return 'getMember servvice executed';
+		return 'getMember service executed';
 	}
 }

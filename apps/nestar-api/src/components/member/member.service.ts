@@ -13,11 +13,12 @@ export class MemberService {
 	public async signup(input: MemberInput): Promise<Member> {
 		// TODO -> Hash password
 		try {
-			return await this.memberModel.create(input);
+			const result = await this.memberModel.create(input);
 			// TODO -> Authentication
+			return result;
 		} catch (err) {
-			console.log('ERROR => Service.model', err);
-			throw new BadRequestException(err);
+			console.log('ERROR -> Service.model', err.message);
+			throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
 		}
 	}
 	public async login(input: LoginInput): Promise<Member> {

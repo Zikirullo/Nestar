@@ -11,21 +11,24 @@ import { T } from './libs/types/common';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(),
+		ConfigModule.forRoot({
+			isGlobal: true,
+			envFilePath: '.env',
+		}),
 		GraphQLModule.forRoot({
 			driver: ApolloDriver,
 			playground: true,
 			uploads: false,
 			autoSchemaFile: true,
-			formatError: (error: T) => {
-				const graphQLFormatedError = {
-					code: error?.extensions.code,
-					message:
-						error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
-				};
-				console.log('GRAPHQL GLOBALL ERROR ->', graphQLFormatedError);
-				return graphQLFormatedError;
-			},
+			// formatError: (error: T) => {
+			// 	const graphQLFormatedError = {
+			// 		code: error?.extensions.code,
+			// 		message:
+			// 			error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
+			// 	};
+			// 	console.log('GRAPHQL GLOBALL ERROR ->', graphQLFormatedError);
+			// 	return graphQLFormatedError;
+			// },
 		}),
 		ComponentsModule,
 		DatabaseModule,

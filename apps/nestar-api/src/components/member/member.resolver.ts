@@ -30,8 +30,7 @@ export class MemberResolver {
 	@Mutation(() => String)
 	public async updateMember(@AuthMember('_id') memberId: ObjectId): Promise<string> {
 		console.log('Mutaion updateMember');
-		console.log('Type->', typeof memberId);
-		console.log('id->', memberId);
+
 		return this.memberService.updateMember();
 	}
 
@@ -64,7 +63,6 @@ export class MemberResolver {
 		return this.memberService.getAllMembersByAdmin();
 	}
 
-	// Authorization: ADMIN
 	@Mutation(() => String)
 	public async updateMemberByAdmin(): Promise<string> {
 		console.log('Mutation: updateMemberByAdmin');

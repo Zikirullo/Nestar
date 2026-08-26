@@ -4,9 +4,10 @@ import { PropertyModule } from './property/property.module';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
 import { LikesModule } from './likes/likes.module';
-import { ViewsModule } from './views/views.module';
+import { ViewModule } from './views/view.module';
 import { FollowModule } from './follow/follow.module';
 import { BoardArticleModule } from './board-article/board-article.module';
+import { ViewService } from './views/view.service';
 
 @Module({
 	imports: [
@@ -16,7 +17,7 @@ import { BoardArticleModule } from './board-article/board-article.module';
 		BoardArticleModule,
 		FollowModule,
 		LikesModule,
-		ViewsModule,
+		ViewModule,
 		CommentModule,
 	],
 })

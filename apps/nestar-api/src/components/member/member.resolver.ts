@@ -104,19 +104,9 @@ export class MemberResolver {
 	): Promise<string> {
 		console.log('Mutation: imageUploader');
 
-		console.log('========== IMAGE UPLOAD ==========');
-		console.log('filename:', filename);
-		console.log('mimetype:', mimetype);
-		console.log('target:', target);
-		console.log('validMimeTypes:', validMimeTypes);
-		console.log('is valid:', validMimeTypes.includes(mimetype));
-		console.log('===================================');
-
 		if (!filename) throw new Error(Message.UPLOAD_FAILED);
 		const ext = path.extname(filename).toLowerCase();
-
 		const validImage = ['.png', '.jpg', '.jpeg'].includes(ext);
-
 		if (!validImage) {
 			throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
 		}
@@ -143,14 +133,22 @@ export class MemberResolver {
 		@Args('target') target: String,
 	): Promise<string[]> {
 		console.log('Mutation: imagesUploader');
+		console.log('files', files);
+		console.log('FILES COUNT =>', files.length);
 
 		const uploadedImages = [];
-		const promisedList = files.map(async (img: Promise<FileUpload>, index: number): Promise<Promise<void>> => {
+
+		const promisedList = files.map(async (img: Promise<FileUpload>, index: number): Promise<void> => {
 			try {
-				const { filename, mimetype, encoding, createReadStream } = await img;
-				const validMime = validMimeTypes.includes(mimetype);
-				console.log('validMime =>', validMime);
-				if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+				const { filename, createReadStream } = await img;
+
+				const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
+
+				const validImage = ['.png', '.jpg', '.jpeg'].includes(ext);
+
+				if (!validImage) {
+					throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+				}
 
 				const imageName = getSerialForImage(filename);
 				const url = `uploads/${target}/${imageName}`;
@@ -162,15 +160,19 @@ export class MemberResolver {
 						.on('finish', () => resolve(true))
 						.on('error', () => reject(false));
 				});
-				if (!result) throw new Error(Message.UPLOAD_FAILED);
+
+				if (!result) {
+					throw new Error(Message.UPLOAD_FAILED);
+				}
 
 				uploadedImages[index] = url;
 			} catch (err) {
-				console.log('Error, file missing!');
+				console.log('UPLOAD ERROR =>', err);
 			}
 		});
 
 		await Promise.all(promisedList);
+
 		return uploadedImages;
 	}
 }

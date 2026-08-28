@@ -9,14 +9,14 @@ import type { ObjectId } from 'mongoose';
 import { MemberType } from '../../libs/enums/member.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { group } from 'console';
+import { error, group } from 'console';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { getSerialForImage, shapeIntoMongoObjectId, validMimeTypes } from '../../libs/config';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { GraphQLUpload, FileUpload } from 'graphql-upload';
 import { createWriteStream } from 'fs';
 import { Message } from '../../libs/enums/common.enum';
-
+import * as path from 'path';
 @Resolver()
 export class MemberResolver {
 	constructor(private readonly memberService: MemberService) {}
@@ -104,10 +104,22 @@ export class MemberResolver {
 	): Promise<string> {
 		console.log('Mutation: imageUploader');
 
-		if (!filename) throw new Error(Message.UPLOAD_FAILED);
-		const validMime = validMimeTypes.includes(mimetype);
-		if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+		console.log('========== IMAGE UPLOAD ==========');
+		console.log('filename:', filename);
+		console.log('mimetype:', mimetype);
+		console.log('target:', target);
+		console.log('validMimeTypes:', validMimeTypes);
+		console.log('is valid:', validMimeTypes.includes(mimetype));
+		console.log('===================================');
 
+		if (!filename) throw new Error(Message.UPLOAD_FAILED);
+		const ext = path.extname(filename).toLowerCase();
+
+		const validImage = ['.png', '.jpg', '.jpeg'].includes(ext);
+
+		if (!validImage) {
+			throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+		}
 		const imageName = getSerialForImage(filename);
 		const url = `uploads/${target}/${imageName}`;
 		const stream = createReadStream();
@@ -136,8 +148,8 @@ export class MemberResolver {
 		const promisedList = files.map(async (img: Promise<FileUpload>, index: number): Promise<Promise<void>> => {
 			try {
 				const { filename, mimetype, encoding, createReadStream } = await img;
-
 				const validMime = validMimeTypes.includes(mimetype);
+				console.log('validMime =>', validMime);
 				if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
 
 				const imageName = getSerialForImage(filename);

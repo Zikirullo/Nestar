@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Properties, Property } from '../../libs/dto/property/property';
 import { Direction, Message } from '../../libs/enums/common.enum';
-import { PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
+import { AgentPropertiesInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
 import { MemberService } from '../member/member.service';
 import { ObjectId } from 'mongoose';
 import { PropertyStatus } from '../../libs/enums/property.enum';
@@ -155,5 +155,35 @@ export class PropertyService {
 				return { [ele]: true };
 			});
 		}
+	}
+
+	public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquiry): Promise<Properties> {
+		const { page, limit, sort, direction, search } = input;
+
+		const match: T = {
+			memberId: memberId,
+		};
+
+		if (search?.propertyStatus) match.propertyStatus = search.propertyStatus;
+
+		const sortRule: T = { [sort ?? 'createdAt']: direction ?? Direction.DESC };
+
+		console.log('match->', match);
+
+		const result = await this.propertyModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sortRule },
+				{
+					$facet: {
+						list: [{ $skip: (page - 1) * limit }, { $limit: limit }, lookUpMember, { $unwind: '$memberData' }],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+
+		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		return result[0];
 	}
 }

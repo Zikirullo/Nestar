@@ -27,6 +27,8 @@ export class PropertyResolver {
 		return await this.propertyService.createProperty(input);
 	}
 
+	// todays
+
 	@UseGuards(WithoutGuard)
 	@Query((returns) => Property)
 	public async getProperty(

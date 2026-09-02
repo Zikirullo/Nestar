@@ -42,6 +42,7 @@ export default class PropertyService {
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
 	}
+	// todays
 	public async getProperty(memberId: ObjectId, propertyId: ObjectId): Promise<Property> {
 		const search: T = {
 			_id: propertyId,

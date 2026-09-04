@@ -1,9 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Like } from '../../libs/dto/like/like';
 import { Model } from 'mongoose';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { T } from '../../libs/types/common';
+import { Message } from '../../libs/enums/common.enum';
 
 @Injectable()
 export class LikesService {
 	constructor(@InjectModel('Like') private readonly likeModel: Model<Like>) {}
+
+	public async likeToggle(input: LikeInput): Promise<number> {
+		console.log('likeToggle: executed');
+		const search: T = {
+				memberId: input.memberId,
+				likeRefId: input.likeRefId,
+			},
+			exist = await this.likeModel.findOne(search).exec();
+		let modifier = 1;
+
+		if (exist) {
+			await this.likeModel.findOneAndDelete(search).exec();
+			modifier = -1;
+		} else {
+			try {
+				await this.likeModel.create(input);
+			} catch (err) {
+				console.log('ERROR: Service.model', err.message);
+				throw new InternalServerErrorException(Message.CREATE_FAILED);
+			}
+		}
+		console.log(`like modifier ${modifier}`);
+
+		return modifier;
+	}
 }

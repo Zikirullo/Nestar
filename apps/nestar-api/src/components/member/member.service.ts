@@ -14,11 +14,13 @@ import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikesService } from '../likes/likes.service';
+import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
 
 @Injectable()
 export class MemberService {
 	constructor(
 		@InjectModel('Member') private readonly memberModel: Model<Member>,
+		@InjectModel('Follow') private readonly followModel: Model<Follower | Following>,
 		private readonly authService: AuthService,
 		private readonly viewService: ViewService,
 		private readonly likeService: LikesService,
@@ -86,6 +88,8 @@ export class MemberService {
 			}
 			const likeInput = { memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
 			targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
+
+			targetMember.meFollowed = await this.checksubscription(memberId, targetId);
 		}
 
 		return targetMember;
@@ -130,6 +134,16 @@ export class MemberService {
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 
 		return result;
+	}
+
+	private async checksubscription(followerId: ObjectId, followingId: ObjectId): Promise<MeFollowed[]> {
+		const result = await this.followModel
+			.findOne({
+				followerId,
+				followingId,
+			})
+			.exec();
+		return result ? [{ followerId, followingId, myFollowing: true }] : [];
 	}
 
 	/** ADMIN **/

@@ -17,7 +17,7 @@ import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../views/view.service';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import moment from 'moment';
-import { lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { match } from 'assert';
 import { LikesService } from '../likes/likes.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
@@ -46,7 +46,6 @@ export default class PropertyService {
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
 	}
-	// todays
 	public async getProperty(memberId: ObjectId, propertyId: ObjectId): Promise<Property> {
 		const search: T = {
 			_id: propertyId,
@@ -109,7 +108,7 @@ export default class PropertyService {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
-							// me Liked
+							lookupAuthMemberLiked(memberId),
 							lookUpMember,
 							{ $unwind: '$memberData' },
 						],

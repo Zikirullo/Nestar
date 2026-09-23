@@ -21,15 +21,15 @@ import { SocketModule } from './socket/socket.module';
 			playground: true,
 			uploads: false,
 			autoSchemaFile: true,
-			formatError: (error: T) => {
-				const graphQLFormatedError = {
-					code: error?.extensions.code,
-					message:
-						error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
-				};
-				console.log('GRAPHQL GLOBALL ERROR ->', graphQLFormatedError);
-				return graphQLFormatedError;
-			},
+			// formatError: (error: T) => {
+			// 	const graphQLFormatedError = {
+			// 		code: error?.extensions.code,
+			// 		message:
+			// 			error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
+			// 	};
+			// 	console.log('GRAPHQL GLOBALL ERROR ->', graphQLFormatedError);
+			// 	return graphQLFormatedError;
+			// },
 		}),
 		ComponentsModule,
 		DatabaseModule,

@@ -59,7 +59,7 @@ export class MemberResolver {
 	}
 	@UseGuards(WithoutGuard)
 	@Query(() => Member)
-	public async getMember(@Args('memeberId') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Member> {
+	public async getMember(@Args('memberId') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Member> {
 		const targetId = shapeIntoMongoObjectId(input);
 		console.log('Query getMember');
 		console.log('memberId->', memberId);
